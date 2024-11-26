@@ -13,7 +13,7 @@ deactivate browser
 Note right of server: The server executes its own code to access the req.body and create a new note object, adding it to the array called notes.
 
 activate server
-server-->>browser: 302 URL Redirect 
+server-->>browser: 302 URL Redirect https://fullstack-exampleapp.herokuapp.com/notes
 deactivate server
 
 ```
