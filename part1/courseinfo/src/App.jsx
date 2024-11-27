@@ -13,20 +13,23 @@ const Content = (props) => {
   console.log(props)
   return (
     <div>
-      <Part part={props.part1} />
-      <Part part={props.part2} />
-      <Part part={props.part3} />
+      <Part part={props.parts[0]} />
+      <Part part={props.parts[1]} />
+      <Part part={props.parts[2]} />
     </div>
   )
 }
 
-/* Since we passed the part objects as part={props.part#} in <Content />, the props container inside Part generates the object like this: 
+/* Since we passed the objects as part={props.parts[]} in <Content />, the props container inside Part generates the object like this: 
 
-part: { 
-  part: { 
+part: {
+    part: { 
       name: "name value", 
       exercises: 10
-  }
+    },
+    ...
+  ]
+  
 } 
 
 So, need to access .name and .exercises as props.part.name / props.part.exercises */
@@ -41,35 +44,38 @@ const Part = (props) => {
   )
 }
 
+/* Props still contains the parts array - need to access properties as props.parts[].property */
 const Total = (props) => {
   console.log(props)
   return (
     <>
-      <p>Number of exercises: {props.part1.exercises + props.part2.exercises + props.part3.exercises }</p>
+      <p>Number of exercises: {props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises }</p>
     </>
   )
 }
 
 const App = () => {
   const course = 'Half Stack application development'
-  const part1 = {
+  const parts = [
+    {
     name: 'Fundamentals of React',
     exercises: 10
-  }
-  const part2 = {
-    name: 'Using props to pass data',
-    exercises: 7
-  }
-  const part3 = {
-    name: 'State of a component',
-    exercises: 14
-  }
+    },
+    {
+      name: 'Using props to pass data',
+      exercises: 7
+    },
+    {
+      name: 'State of a component',
+      exercises: 14
+    }
+  ]
 
   return (
     <div>
       <Header course={course} />
-      <Content part1={part1} part2={part2} part3={part3} />
-      <Total part1={part1} part2={part2} part3={part3} />
+      <Content parts={parts} />
+      <Total parts={parts} />
     </div>
   )
 }
