@@ -9,6 +9,22 @@ const Button = (props) => {
   )
 }
 
+const Statistics = (props) => {
+
+  return (
+    <div>
+      <h1>statistics</h1>
+      <p>good {props.good}</p>
+      <p>neutral {props.neutral}</p>
+      <p>bad {props.bad}</p>
+      <p>all {props.total}</p>
+      <p>average {props.avg}</p>
+      <p>positive {props.positive}%</p>
+    </div>
+  )
+
+}
+
 const App = () => {
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
@@ -16,6 +32,7 @@ const App = () => {
   const [total, setTotal] = useState(0)
   const [avg, setAvg] = useState(0)
   const [positive, setPositive] = useState(0)
+  
 
   const logGoodFeedback = () => {
     console.log('good', good)
@@ -54,13 +71,7 @@ const App = () => {
       <Button logFeedback={() => logGoodFeedback()} text="good"/>
       <Button logFeedback={() => logNeutralFeedback()} text="neutral"/>
       <Button logFeedback={() => logBadFeedback()} text="bad"/>
-      <h1>statistics</h1>
-      <p>good {good}</p>
-      <p>neutral {neutral}</p>
-      <p>bad {bad}</p>
-      <p>all {total}</p>
-      <p>average {avg}</p>
-      <p>positive {positive}%</p>
+      <Statistics good={ good } bad={ bad } neutral={ neutral } total={ total } avg={ avg } positive={ positive }/>
     </div>
   )
 }
