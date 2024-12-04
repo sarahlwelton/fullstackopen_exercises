@@ -13,10 +13,11 @@ const App = () => {
   ]
 
   // Fill the array with the correct number of 0s to start the State
-  let initialPoints = Array(anecdotes.length).fill(0, 0, anecdotes.length)
+  const initialPoints = Array(anecdotes.length).fill(0, 0, anecdotes.length)
    
   const [selected, setSelected] = useState(0)
   const [points, setPoints] = useState(initialPoints)
+  const [most, setMost] = useState(0)
 
   const randomAnecdote = (min, max) => {
     // console.log('min', min, 'max', max)
@@ -26,27 +27,42 @@ const App = () => {
   }
 
   const vote = (points) => {
+
     // Check current value of points
     console.log('points', points)
+
     // Create new copy of points array to mutate
     const copyPoints = [...points]
+
     // Check value of new array, copyPoints
     console.log('copyPoints before', copyPoints)
+
     // Increment the anecdote's vote value that was selected by randomAnecdote()
     copyPoints[selected] += 1
+
     // Set state to new mutated array
     setPoints(copyPoints)
+
     // Log value of new array, just to be sure. 
     console.log('copyPoints after', copyPoints)
+
+    // This apparently doesn't work for larger arrays, but works for this use case since the array is small
+    const newMost = copyPoints.indexOf(Math.max(...copyPoints))
+
+    setMost(newMost)
 
   }
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
       <p>has { points[selected] } votes</p>
       <button onClick={() => vote(points)}>vote</button>
       <button onClick={() => randomAnecdote(0, anecdotes.length)}>next anecdote</button>
+      <h1>Anecdote with most votes</h1>
+      <p>{ anecdotes[most] }</p>
+      <p>has { points[most] } votes</p>
     </div>
   )
 }
