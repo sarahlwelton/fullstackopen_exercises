@@ -1,3 +1,4 @@
+import { useState } from 'react'
 // Give file location in relation to the importing file, and you can omit file extension
 import Note from './components/Note'
 
@@ -9,7 +10,69 @@ const Note = ({ note }) => {
 }
 */
 
-/* When we create a new component for Notes, the key has to be defined on the component itself */
+// Update App to useState
+const App = (props) => {
+  const [notes, setNotes] = useState(props.notes)
+  const [newNote, setNewNote] = useState('')
+  // Add state to toggle only important notes
+  const [showAll, setShowAll] = useState(true)
+
+  // Handle the "save" button in the UI.
+  // Create a new noteObject with the content of newNote
+  // The important value has a 50% chance to be true
+  // id is just length + 1 since 
+  const addNote = (event) => {
+    event.preventDefault()
+    const noteObject = {
+      content: newNote,
+      important: Math.random() < 0.5,
+      id: String(notes.length + 1),
+    }
+    // concat creates a new array with noteObject added to the end
+    setNotes(notes.concat(noteObject))
+    setNewNote('')
+  }
+
+  const handleNoteChange = (event) => {
+    console.log(event.target.value)
+    setNewNote(event.target.value)
+  }
+
+  // If showAll is true, display notes. Otherwise, use notes.filter(note => note.important)
+  const notesToShow = showAll
+    ? notes
+    : notes.filter(note => note.important)
+
+  return (
+    <div>
+      <h1>Notes</h1>
+      <div>
+        <button onClick={() => setShowAll(!showAll)}>
+          show {showAll ? 'important' : 'all'}
+        </button>
+      </div>
+      <ul>
+        {notesToShow.map(note =>
+          <Note key={note.id} note={note} />
+        )}
+      </ul>
+      {/* <ul>
+        {notes.map(note => 
+          <Note key={note.id} note={note} />
+        )}
+      </ul> */}
+      <form onSubmit={addNote}>
+        <input 
+          value={newNote}
+          onChange={handleNoteChange} 
+        />
+        <button type="submit">save</button>
+      </form>   
+    </div>
+  )
+}
+
+/* When we create a new component for Notes, the key has to be defined on the component itself 
 const App = ({ notes }) => {
   return (
     <div>
@@ -22,6 +85,7 @@ const App = ({ notes }) => {
     </div>
   )
 }
+*/
 
 /*
 const App = ({ notes }) => {
