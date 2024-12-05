@@ -34,12 +34,17 @@ const Part = ( {part} ) => {
   )
 }
 
-/* Props still contains the parts array - need to access properties as props.parts[].property */
-const Total = (props) => {
-  console.log(props)
+const Total = ( {course} ) => {
+
+  const parts = course.parts
+  console.log('parts is', parts)
+
+  const total = parts.reduce((sum, parts) => sum + parts.exercises, 0)
+  console.log('total is', total)
+
   return (
     <>
-      <p>Number of exercises: {props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises }</p>
+      <p>Number of exercises: {total} </p>
     </>
   )
 }
@@ -51,6 +56,7 @@ const Course = ( {course} ) => {
     <>
       <Header course={course} />
       <Content course={course} />
+      <Total course={course} />
     </>
   )
   
