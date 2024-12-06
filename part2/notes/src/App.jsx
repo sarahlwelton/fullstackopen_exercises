@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 // Give file location in relation to the importing file, and you can omit file extension
 import Note from './components/Note'
+import noteService from './services/notes'
 
 /* Move Note into its own component file 
 const Note = ({ note }) => {
@@ -20,8 +21,26 @@ const App = () => {
   // Add state to toggle only important notes
   const [showAll, setShowAll] = useState(true)
 
+  // Use the defined services/notes.js to define the effect hook:
+  useEffect(() => {
+    // Since we only use the response.data property, we can modify things further:
+    noteService
+      .getAll()
+      .then(initialNotes => {
+        setNotes(initialNotes)
+    })
+    /*
+    noteService
+      .getAll()
+      .then(response => {
+        setNotes(response.data)
+      })
+    */
+  }, [])
+
   // This retrieves notes from the localhost server
   // This is the most compact way to represent things
+  /*
   useEffect(() => {
     console.log('effect')
     axios
@@ -31,6 +50,7 @@ const App = () => {
         setNotes(response.data)
       })
   }, [])
+  */
   // console.log('render', notes.length, 'notes')
   
 
@@ -67,6 +87,30 @@ const App = () => {
   }, [])
   */
 
+  const addNote = (event) => {
+    event.preventDefault()
+    const noteObject = {
+      content: newNote,
+      important: Math.random() > 0.5
+    }
+    // Again, update to use ./services/notes.js > noteService
+    noteService
+      .create(noteObject)
+      
+      /*
+      .then(response => {
+        setNotes(notes.concat(response.data))
+        setNewNote('')
+      })
+      */
+     // Modify further to take advatnage of passing just response.data
+      .then(returnedNote => {
+        setNotes(notes.concat(returnedNote))
+        setNewNote('')
+      })
+  }
+
+  /*
   // Handle the "save" button in the UI.
   // Create a new noteObject with the content of newNote
   // The important value has a 50% chance to be true
@@ -76,17 +120,80 @@ const App = () => {
     const noteObject = {
       content: newNote,
       important: Math.random() < 0.5,
-      id: String(notes.length + 1),
+      // We can remove this when it's sent to a server - it's better for the server to generate IDs
+      // id: String(notes.length + 1),
     }
     // concat creates a new array with noteObject added to the end
-    setNotes(notes.concat(noteObject))
-    setNewNote('')
+    //setNotes(notes.concat(noteObject))
+    //setNewNote('')
+
+    // Use axios to send a post request to the server, and update the notes array there - then update state
+    axios
+    .post('http://localhost:3001/notes', noteObject)
+    .then(response => {
+      setNotes(notes.concat(response.data))
+      setNewNote('')
+    })
   }
+  */
 
   const handleNoteChange = (event) => {
     console.log(event.target.value)
     setNewNote(event.target.value)
   }
+
+  const toggleImportanceOf = id => {
+    const note = notes.find(n => n.id === id)
+    const changedNote = { ...note, important: !note.important }
+    // In this version, we use the defined ./services/notes.js > noteService
+    /*
+    noteService
+      .update(id, changedNote)
+      .then(response => {
+        setNotes(notes.map(note => note.id === id ? response.data : note))
+      })
+    */
+    // We can take it further to just use the response.data returned by the module
+    noteService
+      .update(id, changedNote)
+      .then(returnedNote => {
+        setNotes(notes.map(note => note.id === id ? returnedNote : note))
+      })
+      // Add a catch method to add an error handler - it will display if any of the promises in the chain fail
+      // The user sees an alert dialog
+      .catch(error => {
+        alert(
+          `the note '${note.content}' was already deleted from server`
+        )
+        // The filter method removes the note from the note state - based on notes NOT matching the provided id that was provided as a parameter
+        setNotes(notes.filter(n => n.id !== id))
+      })
+  }
+
+  /*
+  // Add a function for toggling importance in the note component
+  // Every note will get a unique eventHandler, since every note has a unique ID
+  const toggleImportanceOf = id => {
+    // Use backticks because we're using a template string that fills in the id value
+    const url = `http://localhost:3001/notes/${id}`
+    // Use find to find the note (n) with the correct id value and assign it to const note
+    const note = notes.find(n => n.id === id)
+    // Create a new object that is an exact copy of the old note object, except for flipping the important property
+    // Use the object spread syntax to preserve all of the properties from the original object
+    // Properties added inside the curly braces after will get assigned the appropriate value - in this case, the opposite of whatever important currently is
+    const changedNote = { ...note, important: !note.important }
+    // This is a shallow copy of the old note object - if the values of the old object were objects, a shallow copy would reference the same objects in the old object
+  
+    // The PUT request sends the changedNote to the backend to replace the old object
+    axios.put(url, changedNote).then(response => {
+      // The callback function sets the notes state to a new array that contains all of the notes from the previous array, except for the updated note returned by the server
+      // We use the map method for this.
+      // We do it conditionally - if the note ID === id, the note object returned by the server is added to the array 
+      // If note id != id, then the item from the old array is copied
+      setNotes(notes.map(n => n.id === id ? response.data : n))
+    })
+  }
+  */
 
   // If showAll is true, display notes. Otherwise, use notes.filter(note => note.important)
   const notesToShow = showAll
@@ -103,7 +210,10 @@ const App = () => {
       </div>
       <ul>
         {notesToShow.map(note =>
-          <Note key={note.id} note={note} />
+          <Note 
+            key={note.id} 
+            note={note}
+            toggleImportance={() => toggleImportanceOf(note.id)} />
         )}
       </ul>
       {/* <ul>
