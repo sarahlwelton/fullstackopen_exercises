@@ -1,4 +1,6 @@
-import { useState } from 'react'
+// Add useEffect for calls to external systems!
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 // Give file location in relation to the importing file, and you can omit file extension
 import Note from './components/Note'
 
@@ -11,11 +13,59 @@ const Note = ({ note }) => {
 */
 
 // Update App to useState
-const App = (props) => {
-  const [notes, setNotes] = useState(props.notes)
+// Then update to remove the passing of props from main.jsx
+const App = () => {
+  const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   // Add state to toggle only important notes
   const [showAll, setShowAll] = useState(true)
+
+  // This retrieves notes from the localhost server
+  // This is the most compact way to represent things
+  useEffect(() => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/notes')
+      .then(response => {
+        console.log('promise fulfilled')
+        setNotes(response.data)
+      })
+  }, [])
+  // console.log('render', notes.length, 'notes')
+  
+
+  // This way, we see more clearly that useEffect takes 2 parameters: what will run after every completed render (a function), and how often to run the effect.
+  // If we set the second parameter to an empty array ([]), the effect only runs on the first component render
+  /*
+  const hook = () => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/notes')
+      .then(response => {
+        console.log('promise fulfilled')
+        setNotes(response.data)
+      })
+  }
+  
+  useEffect(hook, [])
+  */
+
+  // We can also write it this way - the event handler function is assigned to eventHandler
+  // Promise from axios is assigned to promise 
+  // eventHandler is assigned as a parameter to the then method in the promise
+  /*
+  useEffect(() => {
+    console.log('effect')
+  
+    const eventHandler = response => {
+      console.log('promise fulfilled')
+      setNotes(response.data)
+    }
+  
+    const promise = axios.get('http://localhost:3001/notes')
+    promise.then(eventHandler)
+  }, [])
+  */
 
   // Handle the "save" button in the UI.
   // Create a new noteObject with the content of newNote
