@@ -3,6 +3,7 @@ import axios from 'axios'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import personService from './services/persons'
 
 const App = () => {
@@ -10,6 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     personService
@@ -42,6 +44,10 @@ const App = () => {
           .update(updatedPerson.id, updatedPerson)
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id === updatedPerson.id ? returnedPerson : person))
+            setMessage(`Updated ${updatedPerson.name}'s phone number in the phonebook`)
+            setTimeout(() => {
+              setMessage('')
+            }, 5000)
             setNewName('')
             setNewNumber('')
           })
@@ -54,6 +60,10 @@ const App = () => {
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          setMessage(`Added ${returnedPerson.name} to the phonebook`)
+            setTimeout(() => {
+              setMessage('')
+            }, 5000)
           setNewName('')
           setNewNumber('')
         })
@@ -67,6 +77,10 @@ const App = () => {
     if (window.confirm(`Do you want to delete the name and number for ${person.name}?`)){
       personService
       .remove(person.id)
+      setMessage(`Deleted ${person.name} from the phonebook`)
+            setTimeout(() => {
+              setMessage('')
+            }, 5000)
     }
   }
   
@@ -88,6 +102,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter handleFilterChange={handleFilterChange}/>
       <h3>Add a new name and number</h3>
       <PersonForm 
