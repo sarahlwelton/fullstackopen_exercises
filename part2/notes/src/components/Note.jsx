@@ -4,11 +4,12 @@ const Note = ({ note, toggleImportance }) => {
     ? 'make not important' : 'make important'
 
   return (
-    <li>
+    <li className="note">
       {note.content} 
       <button onClick={toggleImportance}>{label}</button>
     </li>
   )
 }
+// We have to use the className attribute instead of "class=""" in JSX
   
 export default Note

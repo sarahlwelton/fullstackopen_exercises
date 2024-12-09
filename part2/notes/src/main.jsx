@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 // Add axios library
 import axios from 'axios'
+// Let's add some CSS
+import './index.css'
 
 import App from './App'
 

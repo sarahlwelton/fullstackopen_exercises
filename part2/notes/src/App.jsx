@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 // Give file location in relation to the importing file, and you can omit file extension
 import Note from './components/Note'
+import Notification from './components/Notification'
+import Footer from './components/Footer'
 import noteService from './services/notes'
 
 /* Move Note into its own component file 
@@ -20,6 +22,8 @@ const App = () => {
   const [newNote, setNewNote] = useState('')
   // Add state to toggle only important notes
   const [showAll, setShowAll] = useState(true)
+  // Add state to test the new Notification component
+  const [errorMessage, setErrorMessage] = useState('some error happened...')
 
   // Use the defined services/notes.js to define the effect hook:
   useEffect(() => {
@@ -162,9 +166,18 @@ const App = () => {
       // Add a catch method to add an error handler - it will display if any of the promises in the chain fail
       // The user sees an alert dialog
       .catch(error => {
+        // Let's use the new error message/Notification component 
+        setErrorMessage(
+          `Note '${note.content}' was already removed from the server.`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+        /*
         alert(
           `the note '${note.content}' was already deleted from server`
         )
+          */
         // The filter method removes the note from the note state - based on notes NOT matching the provided id that was provided as a parameter
         setNotes(notes.filter(n => n.id !== id))
       })
@@ -203,6 +216,7 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
+      <Notification message={errorMessage} />
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all'}
@@ -227,7 +241,8 @@ const App = () => {
           onChange={handleNoteChange} 
         />
         <button type="submit">save</button>
-      </form>   
+      </form>
+      <Footer />   
     </div>
   )
 }
