@@ -31,9 +31,24 @@ const App = () => {
       //id: persons.length + 1
     }
     if (persons.some((person) => newName === person.name)) {
-      window.alert(`${newName} is already in the phonebook.`)
-      setNewName('')
-      setNewNumber('')
+      if (window.confirm(`${newName} is already in the phonebook. Do you want to update their number?`)) {
+        const findExistingPerson = persons.find(p => p.name === personObject.name)
+        const updatedPerson = {...findExistingPerson, number: newNumber}
+
+        console.log(findExistingPerson)
+        console.log(updatedPerson)
+
+        personService  
+          .update(updatedPerson.id, updatedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id === updatedPerson.id ? returnedPerson : person))
+            setNewName('')
+            setNewNumber('')
+          })
+      } else {
+        setNewName('')
+        setNewNumber('')
+      }
     } else {
       personService
         .create(personObject)
@@ -52,12 +67,6 @@ const App = () => {
     if (window.confirm(`Do you want to delete the name and number for ${person.name}?`)){
       personService
       .remove(person.id)
-      .catch(error => {
-        alert(
-          `${person.name} was already deleted from the phonebook.`
-        )
-        setPersons(persons.filter(p => p.id !== id))
-      })
     }
   }
   
