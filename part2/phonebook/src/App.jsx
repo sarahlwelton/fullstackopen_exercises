@@ -45,6 +45,21 @@ const App = () => {
       
     }
   }
+
+  const removePerson = id => {
+    const person = persons.find(p => p.id === id)
+
+    if (window.confirm(`Do you want to delete the name and number for ${person.name}?`)){
+      personService
+      .remove(person.id)
+      .catch(error => {
+        alert(
+          `${person.name} was already deleted from the phonebook.`
+        )
+        setPersons(persons.filter(p => p.id !== id))
+      })
+    }
+  }
   
   const handlePersonChange = (event) => {
     console.log(event.target.value)
@@ -74,7 +89,9 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <Persons filteredPersons={filteredPersons} />
+      <Persons 
+        filteredPersons={filteredPersons} 
+        removePerson={removePerson}/>
     </div>
   )
 }
