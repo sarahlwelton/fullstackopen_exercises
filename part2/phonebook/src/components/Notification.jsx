@@ -1,24 +1,28 @@
-const Notification = ({ message }) => {
+const Notification = ({ message, messageType }) => {
 
     if (message === null) {
         return null
     }
-    const messageStyle = {
-        color: 'green',
-        fontSize: '20px',
-        marginTop: '6px',
-        marginBottom: '10px',
-        padding: '10px',
-        background: 'lightgrey',
-        borderStyle: 'solid',
-        borderRadius: '6px'
-
+    if (messageType === "success") {
+        return (
+            <div className="success">
+                {message}
+            </div>
+        )
+    } if (messageType === "error") {
+        return (
+            <div className="error">
+                {message}
+            </div>
+        )
+    } else {
+        return (
+            <div className="default">
+                {message}
+            </div>
+        )
     }
-    return (
-        <div className="success" style={messageStyle}>
-            {message}
-        </div>
-    )
+    
 }
 
 export default Notification
