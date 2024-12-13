@@ -18,7 +18,8 @@ const Note = ({ note }) => {
 // Update App to useState
 // Then update to remove the passing of props from main.jsx
 const App = () => {
-  const [notes, setNotes] = useState([])
+  // Setting this to an empty array is masking a potential error - the data is not yet fetched from the backend on the first render
+  const [notes, setNotes] = useState(null)
   const [newNote, setNewNote] = useState('')
   // Add state to toggle only important notes
   const [showAll, setShowAll] = useState(true)
@@ -40,7 +41,13 @@ const App = () => {
         setNotes(response.data)
       })
     */
+  // This empty array is good, when we are initializing app state from the server
+  // We can set this to a value to change/use the effect function when a value changes
   }, [])
+  // Allows us to set the initial state of notes to "null" and display the notes correctly on the second render
+  if (!notes) {
+    return null
+  }
 
   // This retrieves notes from the localhost server
   // This is the most compact way to represent things
