@@ -17,9 +17,9 @@ const CountryList = ({ filteredCountries }) => {
                 <p>Area: {filteredCountries[0].area}</p>
                 <h2>Languages:</h2>
                 <ul>
-                    {languages.map(language =>
+                    {languages.map((language, index) =>
                         <Language 
-                            key={filteredCountries[0].cca2}
+                            key={index}
                             language={language}/>)}
                 </ul>
                 <img src={filteredCountries[0].flags.png} alt={filteredCountries[0].flags.alt}/>
