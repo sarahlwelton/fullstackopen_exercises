@@ -1,8 +1,7 @@
-const Country = ({ country }) => {
-    
+const Country = ({ country, showCountry }) => {
     return (
         <li>
-            {country.name.common}
+            {country.name.common} <button onClick={() => showCountry({country})}>Show</button>
         </li>
     )
 }

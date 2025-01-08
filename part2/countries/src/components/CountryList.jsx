@@ -1,8 +1,19 @@
 import Country from './Country'
 import Language from './Languages'
+import SingleCountry from './SingleCountry'
 
-const CountryList = ({ filteredCountries }) => {
-    if (filteredCountries.length >=10) {
+const CountryList = ({ filteredCountries, showCountry, selectedCountry }) => {
+
+    if (selectedCountry.length !== 0) {
+        const languages = Object.values(selectedCountry[0].languages)
+        return (
+            <div>
+                <SingleCountry
+                    singleCountry={selectedCountry}
+                    languages={languages} />
+            </div>
+        )
+    }if (filteredCountries.length >=10) {
         return (
             <div>
             <p>Too many countries to display. Try entering another filter.</p>
@@ -12,17 +23,9 @@ const CountryList = ({ filteredCountries }) => {
         const languages = Object.values(filteredCountries[0].languages)
         return (
             <div>
-                <h1>{filteredCountries[0].name.common}</h1>
-                <p>Capital: {filteredCountries[0].capital}</p>
-                <p>Area: {filteredCountries[0].area}</p>
-                <h2>Languages:</h2>
-                <ul>
-                    {languages.map((language, index) =>
-                        <Language 
-                            key={index}
-                            language={language}/>)}
-                </ul>
-                <img src={filteredCountries[0].flags.png} alt={filteredCountries[0].flags.alt}/>
+                <SingleCountry 
+                    singleCountry={filteredCountries}
+                    languages={languages} />
             </div>
         )
     }
@@ -34,6 +37,7 @@ const CountryList = ({ filteredCountries }) => {
           <Country 
             key={country.cca2}
             country={country}
+            showCountry={() => showCountry({country})}
             />
         )}
       </ul>

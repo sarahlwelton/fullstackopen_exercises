@@ -5,6 +5,7 @@ import countryService from './services/countries'
 function App() {
   const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
+  const [selectedCountry, setSelectedCountry] = useState([])
 
   useEffect(() => {
     countryService
@@ -12,7 +13,7 @@ function App() {
       .then(initialCountries => {
         setCountries(initialCountries)
       })
-  })
+  }, [])
 
   const filteredCountries = countries.filter(country =>
     country.name.official.toLowerCase().includes(filter) || country.name.common.toLowerCase().includes(filter)
@@ -21,7 +22,16 @@ function App() {
   const handleCountryChange = (event) => {
     setFilter(event.target.value.toLowerCase())
     console.log(filter)
+    setSelectedCountry([])
+  }
 
+  const showCountry = ({country}) => {
+    console.log('showCountry receives', country)
+    countryService
+      .getCountry(country.name.common)
+      .then(singleCountry => {
+        setSelectedCountry([singleCountry])
+      })
   }
 
   return (
@@ -36,7 +46,9 @@ function App() {
         </form>
       </div>
       <CountryList 
-        filteredCountries={filteredCountries} />
+        filteredCountries={filteredCountries}
+        showCountry={showCountry}
+        selectedCountry={selectedCountry} />
     </div>
   )
 }
