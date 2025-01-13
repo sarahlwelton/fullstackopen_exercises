@@ -1,5 +1,4 @@
 import Country from './Country'
-import Language from './Languages'
 import SingleCountry from './SingleCountry'
 
 const CountryList = ({ filteredCountries, showCountry, selectedCountry }) => {
