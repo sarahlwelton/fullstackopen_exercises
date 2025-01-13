@@ -3,17 +3,18 @@ import weatherService from '../services/weather'
 import {useState, useEffect} from 'react'
 
 const SingleCountry = ({singleCountry, languages}) => {
-
-    const [weather, setWeather] = useState([])
+    const [weather, setWeather] = useState({})
 
     useEffect(() => {
-        weatherService
-          .getWeather({singleCountry}[0].capitalInfo.latlng[0], {singleCountry}[0].capitalInfo.latlng[1])
-          .then(weather => {
-            setWeather(weather)
-          })
-      }, [])
-      
+        async function getWeather() {
+            const newWeather = await weatherService.getWeather(singleCountry[0].capitalInfo.latlng[0], singleCountry[0].capitalInfo.latlng[1])
+            setWeather(newWeather)
+        }
+        getWeather();
+      }, [selectedCountry])
+
+    console.log('weather is', weather)
+
     return (
         <>
             <h1>{singleCountry[0].name.common}</h1>
@@ -28,6 +29,7 @@ const SingleCountry = ({singleCountry, languages}) => {
             </ul>
             <img src={singleCountry[0].flags.png} alt={singleCountry[0].flags.alt}/>
             <h2>Weather in {singleCountry[0].capital}:</h2>
+            <p>Temperature: {weather.main.temp}</p>
         </>
     )
 }
