@@ -1,15 +1,19 @@
 import Country from './Country'
 import SingleCountry from './SingleCountry'
 
-const CountryList = ({ filteredCountries, showCountry, selectedCountry }) => {
+const CountryList = ({ filteredCountries, showCountry, selectedCountry, changeUnits, unitLabel, setUnits, units }) => {
 
-    if (selectedCountry.length !== 0) {
-        const languages = Object.values(selectedCountry[0].languages)
+    if (selectedCountry) {
+        const languages = Object.values(selectedCountry.languages)
         return (
             <div>
                 <SingleCountry
                     singleCountry={selectedCountry}
-                    languages={languages} />
+                    languages={languages}
+                    changeUnits={changeUnits}
+                    unitLabel={unitLabel}
+                    setUnits={setUnits}
+                    units={units} />
             </div>
         )
     }if (filteredCountries.length >=10) {
@@ -23,8 +27,12 @@ const CountryList = ({ filteredCountries, showCountry, selectedCountry }) => {
         return (
             <div>
                 <SingleCountry 
-                    singleCountry={filteredCountries}
-                    languages={languages} />
+                    singleCountry={filteredCountries[0]}
+                    languages={languages}
+                    changeUnits={changeUnits}
+                    unitLabel={unitLabel}
+                    setUnits={setUnits}
+                    units={units}  />
             </div>
         )
     }

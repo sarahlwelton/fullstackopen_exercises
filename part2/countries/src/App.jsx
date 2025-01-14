@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import CountryList from './components/CountryList'
 import countryService from './services/countries'
+import weatherService from './services/weather'
 
 function App() {
   const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
-  const [selectedCountry, setSelectedCountry] = useState([])
+  const [selectedCountry, setSelectedCountry] = useState(null)
+  const [units, setUnits] = useState('metric')
+  const [unitLabel, setUnitLabel] = useState(true)
 
   useEffect(() => {
     countryService
@@ -22,7 +25,9 @@ function App() {
   const handleCountryChange = (event) => {
     setFilter(event.target.value.toLowerCase())
     console.log(filter)
-    setSelectedCountry([])
+    setSelectedCountry(null)
+    setUnits('metric')
+    setUnitLabel(true)
   }
 
   const showCountry = ({country}) => {
@@ -30,9 +35,19 @@ function App() {
     countryService
       .getCountry(country.name.common)
       .then(singleCountry => {
-        setSelectedCountry([singleCountry])
+        setSelectedCountry(singleCountry)
       })
   }
+
+  const changeUnits = () => {
+    if (units === 'metric') {
+        setUnits('imperial')
+        setUnitLabel(false)
+    } if (units === 'imperial') {
+        setUnits('metric')
+        setUnitLabel(true)
+    }
+}
 
   return (
     <div>
@@ -48,7 +63,11 @@ function App() {
       <CountryList 
         filteredCountries={filteredCountries}
         showCountry={showCountry}
-        selectedCountry={selectedCountry} />
+        selectedCountry={selectedCountry}
+        changeUnits={changeUnits}
+        unitLabel={unitLabel}
+        setUnits={setUnits}
+        units={units} />
     </div>
   )
 }
