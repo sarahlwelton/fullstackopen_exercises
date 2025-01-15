@@ -2,10 +2,24 @@
 const express = require('express')
 const app = express()
 
+// We can create our own middleware. 
+// This one prints information about every request sent to the server
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
 // Activate the Express json-parser to access the data in a request body
 // It takes the JSON data of a request, transforms it into a JS Object, and attaches it to the body property
 // of the request object before the route handler is called
 app.use (express.json())
+// If we want to use our own middleware, we add another statement like this
+// We should put it after the express.json middleware, so the request.body can actually be initialized
+// Middleware will always be called in the order it's encountered by the JavaScript engine
+app.use(requestLogger)
 
 let notes = [
     {
@@ -129,6 +143,13 @@ const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+
+// This middleware will catch requests made to non-existent routes and return an error
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
 
 
 // console.log('hello world')
