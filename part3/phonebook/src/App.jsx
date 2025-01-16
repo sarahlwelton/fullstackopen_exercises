@@ -20,7 +20,7 @@ const App = () => {
       .then(initialPersons => {
         setPersons(initialPersons)
       })
-  },)
+    },[])
 
   const filteredPersons = persons.filter(person =>
     person.name.toLowerCase().includes(filter)
