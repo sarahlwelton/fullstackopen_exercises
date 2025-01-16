@@ -2,6 +2,9 @@
 const express = require('express')
 const app = express()
 
+//Install the cors middleware to allow CORS
+const cors = require('cors')
+
 // We can create our own middleware. 
 // This one prints information about every request sent to the server
 const requestLogger = (request, response, next) => {
@@ -20,6 +23,11 @@ app.use (express.json())
 // We should put it after the express.json middleware, so the request.body can actually be initialized
 // Middleware will always be called in the order it's encountered by the JavaScript engine
 app.use(requestLogger)
+
+app.use(cors())
+
+//Use the static middleware to serve static content (i.e. the frontend)
+app.use(express.static('dist'))
 
 let notes = [
     {
@@ -139,7 +147,8 @@ app.post('/api/notes', (request, response) => {
   response.json(note)
 }) */
 
-const PORT = 3001
+// It's important, when deploying an app to the internet, to update the PORT variable to this
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
