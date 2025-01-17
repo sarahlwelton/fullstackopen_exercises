@@ -1,9 +1,14 @@
+// Let's enable the ability to use a .env file for our sensitive info
+require('dotenv').config()
 // Now, let's use Express, instead.
 const express = require('express')
 const app = express()
 
 //Install the cors middleware to allow CORS
 const cors = require('cors')
+
+// Import the Mongoose model for our notes
+const Note = require('./models/note')
 
 // We can create our own middleware. 
 // This one prints information about every request sent to the server
@@ -58,14 +63,25 @@ app.get('/', (request, response) => {
 app.get('/api/notes', (request, response) => {
     // This response uses the "json" method
     // Express automatically creates a JSON formatted string
-    response.json(notes)
+    //response.json(notes)
+
+    // Let's change this to fetch the notes from our MongoDB database
+    Note
+      .find({})
+      .then(notes => {
+        response.json(notes)
+      })
 })
 
 // This event handler handles requests made to the unique address for a single note
 // The colon syntax defines parameters (:id)
 // All HTTP GET requests to /api/notes/SOMETHING will be handled here
 app.get('/api/notes/:id', (request, response) => {
-    // Access the id parameter in the request
+  // We can use the findById method with Mongoose to simplify this code
+  Note.findById(request.params.id).then(note => {
+    response.json(note)
+  })
+   /*  // Access the id parameter in the request
     const id = request.params.id
     // Find the note
     const note = notes.find(note => note.id === id)
@@ -80,7 +96,7 @@ app.get('/api/notes/:id', (request, response) => {
         // If we wanted to override the default status message of "NOT FOUND" we can:
         response.statusMessage = "No notes found matching that ID"
         response.status(404).end()
-      }
+      } */
   })
 
 // This event handler handles requests made to delete a specific note
@@ -94,12 +110,12 @@ response.status(204).end()
 })
 
 // This function generates the ID for the note using the same method as the original
-const generateId = () => {
+/* const generateId = () => {
   const maxId = notes.length > 0
     ? Math.max(...notes.map(n => Number(n.id)))
     : 0
   return String(maxId + 1)
-}
+} */
 
 // This event handler handles HTTP POST requests for creating new notes
 // It makes sure that "content" cannot be empty. 
@@ -108,7 +124,24 @@ const generateId = () => {
 app.post('/api/notes', (request, response) => {
   const body = request.body
 
-  if (!body.content) {
+  // Let's update our code to save notes to the database
+  if (body.content === undefined) {
+    return response.status(400).json({Error: 'Missing note content'})
+  }
+
+  const note = new Note({
+    content: body.content,
+    important: body.important || false,
+  })
+
+  note
+    .save()
+    // By only sending the response in the callback, we ensure we only send the response if the operation succeeds
+    .then(savedNote => {
+      response.json(savedNote)
+    })
+
+ /*  if (!body.content) {
     // No note content = 400 Bad Request
     // You must call return to stop it from executing to the end
     return response.status(400).json({ 
@@ -124,7 +157,7 @@ app.post('/api/notes', (request, response) => {
 
   notes = notes.concat(note)
 
-  response.json(note)
+  response.json(note) */
 })
 
 // This event handler handles HTTP POST requests, for creating new notes
@@ -148,7 +181,7 @@ app.post('/api/notes', (request, response) => {
 }) */
 
 // It's important, when deploying an app to the internet, to update the PORT variable to this
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
