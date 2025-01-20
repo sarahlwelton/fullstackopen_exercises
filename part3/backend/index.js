@@ -23,6 +23,8 @@ const requestLogger = (request, response, next) => {
 // Activate the Express json-parser to access the data in a request body
 // It takes the JSON data of a request, transforms it into a JS Object, and attaches it to the body property
 // of the request object before the route handler is called
+// It is always one of the first middlewares loaded - otherwise, the JSON data from HTTP requests or the 
+// logger middleware would be undefined.
 app.use (express.json())
 // If we want to use our own middleware, we add another statement like this
 // We should put it after the express.json middleware, so the request.body can actually be initialized
@@ -76,11 +78,31 @@ app.get('/api/notes', (request, response) => {
 // This event handler handles requests made to the unique address for a single note
 // The colon syntax defines parameters (:id)
 // All HTTP GET requests to /api/notes/SOMETHING will be handled here
-app.get('/api/notes/:id', (request, response) => {
+app.get('/api/notes/:id', (request, response, next) => {
   // We can use the findById method with Mongoose to simplify this code
-  Note.findById(request.params.id).then(note => {
-    response.json(note)
-  })
+  Note.findById(request.params.id)
+    .then(note => {
+      // Let's add a way to throw an error when a given note ID doesn't exist
+      if (note) {
+        response.json(note)
+      } else {
+        // We'll return a 404 if the note ID can't be found - i.e. note = null
+        response.status(404).end()
+      }
+    })
+    // Let's change to this so we can define our error handling all in once place, instead of inline
+    .catch(error => next(error))
+    /* // We'll add a catch block to handle cases where the promise returned by .findById is rejected
+    .catch(error => {
+      // It's always a good idea to print the object that causes your exception
+      // It can save you some long and frustrating debug sessions
+      console.log(error)
+      // Let's use this error to catch when a request has an ID value in the wrong format
+      // It fits the situation perfectly - and we can add more info about the cause of the error
+      response.status(400).send({ error : "Malformatted id" })
+      // This works, but just throws a rather generic Internal Server error
+      //response.status(500).end() */
+    })
    /*  // Access the id parameter in the request
     const id = request.params.id
     // Find the note
@@ -96,17 +118,27 @@ app.get('/api/notes/:id', (request, response) => {
         // If we wanted to override the default status message of "NOT FOUND" we can:
         response.statusMessage = "No notes found matching that ID"
         response.status(404).end()
-      } */
-  })
+      } 
+  })*/
+  
 
 // This event handler handles requests made to delete a specific note
 app.delete('/api/notes/:id', (request, response) => {
-const id = request.params.id
+
+  Note.findByIdAndDelete(request.params.id)
+  // When we delete a note that exists or doesn't exist, we return the same response.
+  // We could break this down further - check if the resource was actually deleted and return a different status code
+  .then(result => {
+    response.status(204).end()
+  })
+  // Any exceptions go to the error handler
+  .catch(error => next(error))
+/* const id = request.params.id
 notes = notes.filter(note => note.id !== id)
 
 // There's no consensus on what to return with a DELETE request if the resource does not exist. 
 // So, we just use 204 for a success and if there was no resource found. 
-response.status(204).end()
+response.status(204).end() */
 })
 
 // This function generates the ID for the note using the same method as the original
@@ -180,6 +212,26 @@ app.post('/api/notes', (request, response) => {
   response.json(note)
 }) */
 
+// Let's make a new API route for updating the importance of a note
+app.put('/api/notes/:id', (request, response, next) => {
+  const body = request.body
+
+  // With this, we also allow the content of the note to be updated.
+  const note = {
+    content: body.content,
+    important: body.important,
+  }
+
+  // This method receives a regular JS object, not a new Note object.
+  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    // By default, the updatedNote parameter will receive the original document without modifications.
+    // We add the { new: true } parameter to make the event handler get called with the modified document
+    .then(updatedNote => {
+      response.json(updatedNote)
+    })
+    .catch(error => next(error))
+})
+
 // It's important, when deploying an app to the internet, to update the PORT variable to this
 const PORT = process.env.PORT
 app.listen(PORT, () => {
@@ -191,7 +243,26 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
+// This should be the next-to-last middleware loaded into Express
+// Otherwise, no routes or middleware will be called - everything would be an unknown endpoint
 app.use(unknownEndpoint)
+
+// Let's define our errorHandler
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  // This errorHandler checks if we get a CastError exception - which we know is caused by an invalid 
+  // object ID for Mongo
+  // Otherwise, the error gets passed forward to the default Express error handler
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+// This has to be the last loaded middleware. All the routes should be registered before this!
+app.use(errorHandler)
 
 
 // console.log('hello world')
