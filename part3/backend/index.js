@@ -153,13 +153,13 @@ response.status(204).end() */
 // It makes sure that "content" cannot be empty. 
 // It defaults important to false 
 // It discards all other properties
-app.post('/api/notes', (request, response) => {
+app.post('/api/notes', (request, response, next) => {
   const body = request.body
 
   // Let's update our code to save notes to the database
-  if (body.content === undefined) {
+  /* if (body.content === undefined) {
     return response.status(400).json({Error: 'Missing note content'})
-  }
+  } */
 
   const note = new Note({
     content: body.content,
@@ -172,6 +172,7 @@ app.post('/api/notes', (request, response) => {
     .then(savedNote => {
       response.json(savedNote)
     })
+    .catch(error => next(error))
 
  /*  if (!body.content) {
     // No note content = 400 Bad Request
@@ -212,20 +213,27 @@ app.post('/api/notes', (request, response) => {
   response.json(note)
 }) */
 
+
 // Let's make a new API route for updating the importance of a note
 app.put('/api/notes/:id', (request, response, next) => {
-  const body = request.body
+
+  const { content, important } = request.body
 
   // With this, we also allow the content of the note to be updated.
-  const note = {
+  /* const note = {
     content: body.content,
     important: body.important,
-  }
+  } */
 
   // This method receives a regular JS object, not a new Note object.
-  Note.findByIdAndUpdate(request.params.id, note, { new: true })
-    // By default, the updatedNote parameter will receive the original document without modifications.
+  Note.findByIdAndUpdate(
+    request.params.id, 
+
+    { content, important },
+     // By default, the updatedNote parameter will receive the original document without modifications.
     // We add the { new: true } parameter to make the event handler get called with the modified document
+    { new: true, runValidators: true, context: 'query' }
+  ) 
     .then(updatedNote => {
       response.json(updatedNote)
     })
@@ -256,7 +264,9 @@ const errorHandler = (error, request, response, next) => {
   // Otherwise, the error gets passed forward to the default Express error handler
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  } else if (error.errors.name === 'ValidatorError') {
+    return response.status(400).json({ error: error.message })
+  }
 
   next(error)
 }
