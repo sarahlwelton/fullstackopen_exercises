@@ -17,15 +17,8 @@ mongoose.connect(url)
 // This defines the schema for a note - tells Mongoose how to store note objects 
 // in the database
 const noteSchema = new mongoose.Schema({
-  // If we want to validate the format of the data before storing it in our database, we can use our schema
-  content: {
-    // Our content field now has to be at least 5 characters long and is required
-    // We're using built-in validators, but we can also construct our own
-    type: String,
-    minLength: 5,
-    required: true
-  },
-  important: Boolean,
+  content: String,
+  important: Boolean
 })
 
 // This defines the model for a Note - we need to convert schemas into Models to use
