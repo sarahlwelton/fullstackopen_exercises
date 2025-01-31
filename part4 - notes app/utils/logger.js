@@ -1,5 +1,24 @@
-// This will log all normal log messages
+// We'll modify the logger to not log messages when running in TEST mode
 const info = (...params) => {
+
+  if (process.env.NODE_ENV !== 'test') { 
+    console.log(...params)
+  }
+}
+
+const error = (...params) => {
+
+  if (process.env.NODE_ENV !== 'test') { 
+    console.error(...params)
+  }
+}
+
+module.exports = {
+  info, error
+}
+
+// This will log all normal log messages
+/*const info = (...params) => {
   console.log(...params)
 }
 // This will log all error messages
@@ -23,3 +42,4 @@ const error = (...params) => {
 module.exports = {
   info, error
 }
+*/
