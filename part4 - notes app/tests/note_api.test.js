@@ -23,11 +23,51 @@ const Note = require('../models/note')
 
 // Before we run each test, we'll run this to clear out the database and save the two notes stored in the initialNotes array
 beforeEach(async () => {
+
   await Note.deleteMany({})
+
+  //const noteObjects = helper.initialNotes
+  //.map(note => new Note(note))
+  // We create an array that consists of promises, created by calling the .save method of each item
+  // in the noteObjects array
+  // const promiseArray = noteObjects.map(note => note.save())
+  // We can wait for all of the async operations to finish executing with Promise.all
+  // It transforms the array of promises into a single promise, which is fulfilled once all promises in the array
+  // are resolved.
+  // If we want to access the returned values of each promise in the array:
+  // const results = await Promise.all(promiseArray)
+  // (we get an array that contains the resolved values for each promise in the promiseArray)
+
+  // Promise.all executes all received promises in parallel.
+  // If they need to be executed in a specific order, that's problematic.
+  //await Promise.all(promiseArray)
+
+  // The for...of syntax makes sure we have a specific execution order
+  for (let note of helper.initialNotes) {
+    let noteObject = new Note(note)
+    await noteObject.save()
+  }
+
+  // This also doesn't quite work - each iteration of the forEach loop is async.
+  // beforeEach doesn't wait for the forEach promises to finish.
+  // The execution of tests begins immediately after beforeEach has finished - so
+  // tests execute before the database state is initialized.
+  /* await Note.deleteMany({})
+  console.log('cleared')
+
+  helper.initialNotes.forEach(async (note) => {
+    let noteObject = new Note(note)
+    await noteObject.save()
+    console.log('saved')
+  })
+  console.log('done') */
+
+  // This works, but there is a better way to save multiple objects to the DB.
+  /* await Note.deleteMany({})
   let noteObject = new Note(helper.initialNotes[0])
   await noteObject.save()
   noteObject = new Note(helper.initialNotes[1])
-  await noteObject.save()
+  await noteObject.save() */
 })
 
 test('notes are returned as json', async () => {
@@ -96,6 +136,8 @@ test('a specific note can be viewed', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
+  // We have to use deepStrictEqual for this test
+  // We care that the values of the object fields are the same
   assert.deepStrictEqual(resultNote.body, noteToView)
 })
 
