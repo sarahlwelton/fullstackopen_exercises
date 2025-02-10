@@ -9,6 +9,12 @@ const noteSchema = new mongoose.Schema({
     minlength: 5
   },
   important: Boolean,
+  // Let's expand the note schema to include information about the user that created it
+  // We're now storing references in both documents
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
 })
 
 noteSchema.set('toJSON', {
