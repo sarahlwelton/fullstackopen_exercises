@@ -11,6 +11,9 @@ const Note = require('../models/note')
 // We need to add the User model so we can assign a user to each created note
 const User = require('../models/user')
 
+// Add the jsonwebtoken for authentication note requests
+const jwt = require('jsonwebtoken')
+
 // Let's change our route handler functions into async functions
 
 notesRouter.get('/', async (request, response) => {
@@ -58,12 +61,26 @@ notesRouter.get('/:id', async (request, response) => {
     .catch(error => next(error))
 }) */
 
+// The helper isolates the token from the Authorization header
+const getTokenFrom = request => {
+  const authorization = request.get('Authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
+
 // But how do we handle error situations with async/await?
 // We use try/catch! Or the async-error library
 notesRouter.post('/', async (request, response) => {
   const body = request.body
-
-  const user = await User.findById(body.userId)
+  // We use the "verify" method to check the validity and decode the token
+  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+  // If the object decoded doesn't contain the user's identity, return an error
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
+  const user = await User.findById(decodedToken.id)
 
   const note = new Note({
     content: body.content,
