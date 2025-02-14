@@ -1,0 +1,31 @@
+h1 {
+    color: green;
+    font-style: italic;
+}
+
+/* This works, but it's generally not good practice to use element types for CSS */
+/*
+li {
+    color: grey;
+    padding-top: 3px;
+    font-size: 15px;
+}
+*/
+
+/* Define classes for the className attribute using the .classname syntax */
+.note {
+    color: grey;
+    padding-top: 3px;
+    font-size: 15px;
+}
+
+/* Add styling for the error message */
+.error {
+    color: red;
+    background: lightgrey;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
