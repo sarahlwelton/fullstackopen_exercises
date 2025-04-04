@@ -1,33 +1,27 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
 import noteService from './services/notes'
-// Import the loginService for handling logins
 import loginService from './services/login'
+import Togglable from './components/Togglable'
+import NoteForm from './components/NoteForm'
+import LoginForm from './components/Login'
 
 const App = () => {
   
   const [notes, setNotes] = useState(null)
-  const [newNote, setNewNote] = useState('')
+  // const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState('some error happened...')
   // Let's add the Username and Password states
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  //const [loginVisible, setLoginVisible] = useState(false)
 
-  
-  useEffect(() => {
-    noteService
-      .getAll()
-      .then(initialNotes => {
-        setNotes(initialNotes)
-    })
-  }, [])
-  if (!notes) {
-    return null
-  }
+  // Let's set a way to hide the new note form after we
+  // create a new note
+  const noteFormRef = useRef()
+
   // Let's add a second effect hook to check if there's already a logged in user
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
@@ -40,25 +34,38 @@ const App = () => {
   // App is rendered
   }, [])
 
-  const addNote = (event) => {
-    event.preventDefault()
+  useEffect(() => {
+    noteService
+      .getAll()
+      .then(initialNotes => {
+        setNotes(initialNotes)
+    })
+  }, [])
+  if (!notes) {
+    return null
+  }
+
+
+  const addNote = (noteObject) => {
+    // We move the event handler into the NoteForm component, instead
+    /* event.preventDefault()
     const noteObject = {
       content: newNote,
       important: Math.random() > 0.5
-    }
-    
+    } */
+    noteFormRef.current.toggleVisibility()
     noteService
       .create(noteObject)  
       .then(returnedNote => {
         setNotes(notes.concat(returnedNote))
-        setNewNote('')
+        //setNewNote('')
       })
   }
 
-  const handleNoteChange = (event) => {
+ /* const handleNoteChange = (event) => {
     console.log(event.target.value)
     setNewNote(event.target.value)
-  }
+  } */
 
   const toggleImportanceOf = id => {
     const note = notes.find(n => n.id === id)
@@ -85,7 +92,7 @@ const App = () => {
     : notes.filter(note => note.important)
 
   // We add the new event handler to handle logins
-  const handleLogin = async (event) => {
+/*   const handleLogin = async (event) => {
     event.preventDefault()
     console.log('logging in with', username, password)
       
@@ -110,41 +117,46 @@ const App = () => {
           setErrorMessage(null)
         }, 5000)
       }
-  }
+  } */
   // Let's add two helper functions to handle the login and notes forms
   // We should only display the login form when the user is not logged in (user === null)
+  /* const loginForm = () => {
+      const hideWhenVisible = { display: loginVisible ? 'none' : '' }
+      const showWhenVisible = { display: loginVisible ? '' : 'none' }
+  
+      return (
+        <div>
+          <div style={hideWhenVisible}>
+            <button onClick={() => setLoginVisible(true)}>log in</button>
+          </div>
+          <div style={showWhenVisible}>
+            <LoginForm
+              username={username}
+              password={password}
+              handleUsernameChange={({ target }) => setUsername(target.value)}
+              handlePasswordChange={({ target }) => setPassword(target.value)}
+              handleSubmit={handleLogin}
+            />
+            <button onClick={() => setLoginVisible(false)}>cancel</button>
+          </div>
+        </div>
+    )     
+  } */
+
+  // Now, we can implement the forms using the Togglable component, and the Form components
+  // as children
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-          <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-          <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>      
+    <Togglable buttonLabel='login'>
+      <LoginForm 
+        setUser={setUser}
+        setErrorMessage={setErrorMessage} />
+    </Togglable>
   )
 
   const noteForm = () => (
-    <form onSubmit={addNote}>
-      <input
-        value={newNote}
-        onChange={handleNoteChange}
-      />
-      <button type="submit">save</button>
-    </form>  
+    <Togglable buttonLabel='new note' ref={noteFormRef}>
+      <NoteForm createNote={addNote} />
+    </Togglable> 
   )
 
   return (
