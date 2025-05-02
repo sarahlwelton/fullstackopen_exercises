@@ -4,6 +4,10 @@ const NoteForm = ({ createNote }) => {
   // The App component does not need the contents of a new note before it has been created - the state can move here
   const [newNote, setNewNote] = useState('')
 
+  const handleChange = (event) => {
+    setNewNote(event.target.value)
+  }
+
   const addNote = (event) => {
     event.preventDefault()
     createNote({
@@ -21,7 +25,9 @@ const NoteForm = ({ createNote }) => {
       <form onSubmit={addNote}>
         <input
           value={newNote}
-          onChange={event => setNewNote(event.target.value)}
+          onChange={handleChange}
+          placeholder='write note content here'
+          id='note-input'
         />
         <button type="submit">save</button>
       </form>
