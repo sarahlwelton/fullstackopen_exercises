@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import loginService from '../services/login'
 import noteService from '../services/notes'
+import PropTypes from 'prop-types'
 
 // Extract the login form to its own component
 const LoginForm = ({ setUser, setErrorMessage }) => {
@@ -57,6 +58,15 @@ const LoginForm = ({ setUser, setErrorMessage }) => {
      </form>
    </div>
  )
+}
+
+// Add PropTypes validation for all props on LoginForm
+LoginForm.PropTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  handleUsernameChange: PropTypes.func.isRequired,
+  handlePasswordChange: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
+  password: PropTypes.string.isRequired
 }
 
 export default LoginForm
