@@ -24,6 +24,7 @@ const NoteForm = ({ createNote }) => {
 
       <form onSubmit={addNote}>
         <input
+          data-testid='notebox'
           value={newNote}
           onChange={handleChange}
           placeholder='write note content here'

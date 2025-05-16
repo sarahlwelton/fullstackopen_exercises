@@ -146,7 +146,7 @@ const App = () => {
   // Now, we can implement the forms using the Togglable component, and the Form components
   // as children
   const loginForm = () => (
-    <Togglable buttonLabel='login'>
+    <Togglable buttonLabel='log in'>
       <LoginForm 
         setUser={setUser}
         setErrorMessage={setErrorMessage} />
@@ -173,7 +173,6 @@ const App = () => {
         {noteForm()}
       </div>
       }
-      <h2>Notes</h2>
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all'}

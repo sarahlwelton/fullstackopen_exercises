@@ -42,19 +42,21 @@ const LoginForm = ({ setUser, setErrorMessage }) => {
        <div>
          username
          <input
+          data-testid='username'
            value={username}
            onChange={event => setUsername(event.target.value)}
          />
        </div>
        <div>
          password
-         <input
+         <input 
+         data-testid='password'
            type="password"
            value={password}
            onChange={event => setPassword(event.target.value)}
          />
      </div>
-       <button type="submit">login</button>
+       <button type="submit">log in</button>
      </form>
    </div>
  )
