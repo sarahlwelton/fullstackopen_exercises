@@ -1,3 +1,16 @@
+// This new reducer sets state to an array
+// The NEW_NOTE action adds notes to the state array with state.push
+// BUT THIS IS BAD. This changes the state of the state-object. 
+// We should use concat instead, to create a new array. 
+/* const noteReducer = (state = [], action) => {
+  if (action.type === 'NEW_NOTE') {
+    state.push(action.payload)
+    return state
+  }
+
+  return state
+} */
+
 
 const noteReducer = (state = [], action) => {
   switch(action.type) {
@@ -25,6 +38,29 @@ const noteReducer = (state = [], action) => {
       return state
   }
 }
+
+  // Move the action creators into the Reducer
+  const generateId = () =>
+    Number((Math.random() * 1000000).toFixed(0))
+
+  // We can have one 'default' export but multiple normal exports in a single module
+  export const createNote = (content) => {
+    return {
+      type: 'NEW_NOTE',
+      payload: {
+        content,
+        important: false,
+        id: generateId()
+      }
+    }
+  }
+
+  export const toggleImportanceOf = (id) => {
+    return {
+      type: 'TOGGLE_IMPORTANCE',
+      payload: { id }
+    }
+  }
 
 // This is the very basic reducer, the one that we start with for one task
 /* const noteReducer = (state = [], action) => {
