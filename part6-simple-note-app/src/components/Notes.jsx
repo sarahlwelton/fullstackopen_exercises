@@ -22,10 +22,23 @@ const Note = ({ note, handleClick }) => {
 const Notes = () => {
 
   const dispatch = useDispatch()
+  // Now that we want to return the specific notes property of the state:
+  //const notes = useSelector(state => state.notes)
+
+  // Now that we want to use the specific filter to show notes:
+  const notes = useSelector(({ filter, notes }) => {
+  if ( filter === 'ALL' ) {
+    return notes
+  }
+  return filter  === 'IMPORTANT' 
+    ? notes.filter(note => note.important)
+    : notes.filter(note => !note.important)
+})
+
   // We use the useSelector hook to access the notes stored in the store
   // useSelector needs a function as a parameter - to search or select data
   // from the Redux store. We need all the notes, so we just return the whole state.
-  const notes = useSelector(state => state)
+  //const notes = useSelector(state => state)
   // For example, if we wanted to return only important notes:
   // const importantNotes = useSelector(state => state.filter(note => note.important)) 
 

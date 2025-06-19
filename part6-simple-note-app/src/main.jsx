@@ -1,12 +1,25 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createStore } from 'redux'
+// Now that we have 2 reducers, we need to use combineReducers
+import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 
 import App from './App'
 import noteReducer from './reducers/noteReducer'
+import filterReducer from './reducers/filterReducer'
 
-const store = createStore(noteReducer)
+// We define our reducer for the app as a combined reducer
+const reducer = combineReducers({
+  // We define the value of the notes property of the store with noteReducer
+  notes: noteReducer,
+  // We define the value of the filter property of the store with filterReducer
+  filter: filterReducer
+
+  // Every action gets handled in every part of the combined reducer - every reducer 
+  // "listens" to all of the dispatch actions, and does something if it is instructed to do so
+})
+
+const store = createStore(reducer)
 
 // Move App into its own file
 
