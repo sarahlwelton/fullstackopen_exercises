@@ -8,6 +8,8 @@ import { configureStore } from '@reduxjs/toolkit'
 //import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 
+import store from './store'
+
 import App from './App'
 // import noteService from './services/notes'
 import noteReducer from './reducers/noteReducer'
@@ -29,12 +31,12 @@ const reducer = combineReducers({
 
 //const store = createStore(reducer)
 
-const store = configureStore({
+/* const store = configureStore({
   reducer: {
     notes: noteReducer,
     filter: filterReducer
   }
-})
+}) */
 
 // Initialize the notes state based on the data received from the server - fetch the notes
 // and dispatch an action using appendNote for each individual note object

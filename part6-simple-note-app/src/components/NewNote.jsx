@@ -17,9 +17,7 @@ const NewNote = () => {
     // So, any component can make changes to the Redux store
     // dispatch(createNote(content))
 
-    // Use the noteService to create a new note on the backend
-    const newNote = await noteService.createNew(content)
-    dispatch(createNote(newNote))
+    dispatch(createNote(content))
   }
 
   return (

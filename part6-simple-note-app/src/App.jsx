@@ -2,17 +2,17 @@ import { useEffect } from 'react'
 import NewNote from './components/NewNote'
 import Notes from './components/Notes'
 import VisibilityFilter from './components/VisibilityFilter'
-import noteService from './services/notes'
-import { setNotes } from './reducers/noteReducer'
+import { initializeNotes } from './reducers/noteReducer'
 import { useDispatch } from 'react-redux'
 
 const App = () => {
   const dispatch = useDispatch()
   useEffect(() => {
-    noteService
-      .getAll().then(notes => dispatch(setNotes(notes)))
+    // We can simplify this down so that App doesn't need to be aware of the actions at all
+    // We've separated the initialization logic for the notes from the React component
+    dispatch(initializeNotes)
   }, [])
-  
+
   return (
     <div>
       <NewNote />
