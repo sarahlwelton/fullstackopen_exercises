@@ -10,8 +10,9 @@ const App = () => {
   useEffect(() => {
     // We can simplify this down so that App doesn't need to be aware of the actions at all
     // We've separated the initialization logic for the notes from the React component
-    dispatch(initializeNotes)
-  }, [])
+    // Don't forget to call the function... Whoops.
+    dispatch(initializeNotes())
+  }, [dispatch])
 
   return (
     <div>
