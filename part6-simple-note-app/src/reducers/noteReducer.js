@@ -17,7 +17,7 @@ import { createSlice, current } from '@reduxjs/toolkit'
 } */
 
 // Let's initialize the state with a couple notes to ease development
-const initialState = [
+/* const initialState = [
   {
     content: 'reducer defines how redux store works',
     important: true,
@@ -28,7 +28,7 @@ const initialState = [
     important: false,
     id: 2,
   },
-]
+] */
 
 /* const noteReducer = (state = initialState, action) => {
   switch(action.type) {
@@ -66,19 +66,24 @@ const initialState = [
     // This defines the prefix used in the action's type values
     name: 'notes',
     // This defines the initial state
-    initialState,
+    // We now want to change this to an empty state.
+    initialState: [],
     // This takes the reducers as an object, with functions handling the state changes of specific actions
     reducers: {
       createNote(state, action) {
-        const content = action.payload
+
+        // Now that we're using the backend, the backend will generate the ID automatically
+        state.push(action.payload)
+
+        // const content = action.payload
         // We are mutating the state argument's array instead of returning a new array now
         // The Immer library uses the mutated state to create a new, immutable state
         // Mutating state is useful for updating complex states
-        state.push({
+        /* state.push({
           content,
           important: false,
           id: generateId(),
-        })
+        }) */
       },
       toggleImportanceOf(state, action) {
         const id = action.payload
@@ -94,6 +99,13 @@ const initialState = [
         return state.map(note =>
           note.id !== id ? note : changedNote 
         )     
+      },
+      // Let's add an action for adding a new note object
+      appendNote(state, action) {
+        state.push(action.payload)
+      },
+      setNotes(state, action) {
+        return action.payload
       }
     },
   })
@@ -128,5 +140,5 @@ const initialState = [
 } */
 
   // Now, we structure the exports like this. 
-export const { createNote, toggleImportanceOf } = noteSlice.actions
+export const { createNote, toggleImportanceOf, appendNote, setNotes } = noteSlice.actions
 export default noteSlice.reducer

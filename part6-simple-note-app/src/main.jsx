@@ -9,6 +9,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
 
 import App from './App'
+// import noteService from './services/notes'
 import noteReducer from './reducers/noteReducer'
 import filterReducer from './reducers/filterReducer'
 
@@ -34,6 +35,23 @@ const store = configureStore({
     filter: filterReducer
   }
 })
+
+// Initialize the notes state based on the data received from the server - fetch the notes
+// and dispatch an action using appendNote for each individual note object
+/* noteService.getAll().then(notes =>
+  notes.forEach(note => {
+    store.dispatch(appendNote(note))
+  })
+) */
+// But this is a little messy - dispatching multiple actions is impractical
+
+// Await only works inside async functions - code in here is not inside a function, so 
+// we'll avoid using async
+
+// But now, we'll move this to the App component
+/* noteService.getAll().then(notes =>
+  store.dispatch(setNotes(notes))
+) */
 
 // Move App into its own file
 
