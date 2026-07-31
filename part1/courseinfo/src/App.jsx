@@ -1,83 +1,55 @@
-/* props is the container that holds all the data passed to this componenent when it's called.
-It "holds" the course object, which contains the name key & value */
 const Header = (props) => {
-  console.log(props)
+
   return (
     <>
-      <h1>{props.course.name}</h1>
+    <h1>{props.course}</h1>
+    </>
+  )
+}
+
+const Part = (props) => {
+
+  return (
+    <>
+      <p>{props.part}: {props.exercises}</p>
     </>
   )
 }
 
 const Content = (props) => {
-  console.log(props)
-  return (
-    <div>
-      <Part part={props.parts[0]} />
-      <Part part={props.parts[1]} />
-      <Part part={props.parts[2]} />
-    </div>
-  )
-}
 
-/* Since we passed the objects as part={props.parts[]} in <Content />, the props container inside Part generates the object like this: 
-
-part: {
-    part: { 
-      name: "name value", 
-      exercises: 10
-    },
-    ...
-  ]
-  
-} 
-
-So, need to access .name and .exercises as props.part.name / props.part.exercises */
-const Part = (props) => {
-  console.log(props)
   return (
     <>
-      <p>
-        {props.part.name}: {props.part.exercises}
-      </p>
+      <Part part={props.part1} exercises={props.exercises1}></Part>
+      <Part part={props.part2} exercises={props.exercises2}></Part>
+      <Part part={props.part3} exercises={props.exercises3}></Part>
     </>
   )
 }
 
-/* Props still contains the parts array - need to access properties as props.parts[].property */
 const Total = (props) => {
-  console.log(props)
+
   return (
     <>
-      <p>Number of exercises: {props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises }</p>
+      <p>Number of exercises = {props.exercises1 + props.exercises2 + props.exercises3}</p>
     </>
   )
 }
 
 const App = () => {
-  const course = {
-    name: 'Half Stack application development',
-    parts: [
-      {
-      name: 'Fundamentals of React',
-      exercises: 10
-      },
-      {
-        name: 'Using props to pass data',
-        exercises: 7
-      },
-      {
-        name: 'State of a component',
-        exercises: 14
-      }
-    ]
-  }
+  const course = 'Half Stack application development'
+  const part1 = 'Fundamentals of React'
+  const exercises1 = 10
+  const part2 = 'Using props to pass data'
+  const exercises2 = 7
+  const part3 = 'State of a component'
+  const exercises3 = 14
 
   return (
     <div>
-      <Header course={course} />
-      <Content parts={course.parts} />
-      <Total parts={course.parts} />
+      <Header course={course}></Header>
+      <Content part1={part1} exercises1={exercises1} part2={part2} exercises2={exercises2} part3={part3} exercises3={exercises3}></Content>
+      <Total exercises1={exercises1} exercises2={exercises2} exercises3={exercises3}></Total>
     </div>
   )
 }
