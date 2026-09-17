@@ -16,7 +16,7 @@ const App = () => {
       .then(response => {
         setPersons(response.data)
       })
-  })
+  }, [])
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -41,10 +41,12 @@ const App = () => {
       const personObject = {
         name: newName,
         number: newNumber,
-        id: Math.floor(Math.random() * 10000)
       }
-
-      setPersons(persons.concat(personObject))
+      axios
+        .post(`http://localhost:3001/persons`, personObject)
+        .then(response => {
+          setPersons(persons.concat(response.data))
+        })
       setNewName('')
       setNewNumber('')
     }
@@ -53,7 +55,6 @@ const App = () => {
   const peopleList = filter.length < 0
     ? persons
     : persons.filter(person => person.name.toLowerCase().includes(filter))
-  // TODO: Keep refactoring components out into their own files. 
   return (
     <div>
       <h1>Phonebook</h1>
