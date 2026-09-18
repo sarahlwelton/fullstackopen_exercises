@@ -48,9 +48,22 @@ const App = () => {
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id === id ? returnedPerson : person))
           })
+          .catch(() => {
+            setMessage({
+              message: `The entry for ${person.name} was already deleted from the phonebook.`,
+              type: 'error'
+            })
+            setTimeout(() => {
+              setMessage(null)
+            }, 3000)
+            setPersons(persons.filter(person => person.id !== id))
+          })
         setNewName('')
         setNewNumber('')
-        setMessage(`Updated ${person.name} in the phonebook.`)
+        setMessage({
+          message: `Updated ${person.name} in the phonebook.`,
+          type: 'info'
+        })
         setTimeout(() => {
         setMessage(null)
       }, 3000)
@@ -67,7 +80,10 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
-          setMessage(`Added ${returnedPerson.name} to the phonebook.`)
+          setMessage({
+            message: `Added ${returnedPerson.name} to the phonebook.`,
+            type: 'info'
+          })
           setTimeout(() => {
             setMessage(null)
           }, 3000)
@@ -83,7 +99,10 @@ const App = () => {
         const id = person.id
         setPersons(persons.filter(person => person.id !== id))
       })
-      setMessage(`Removed ${person.name} from the phonebook.`)
+      setMessage({
+        message: `Removed ${person.name} from the phonebook.`,
+        type: 'info'
+      })
       setTimeout(() => {
         setMessage(null)
       }, 3000)
