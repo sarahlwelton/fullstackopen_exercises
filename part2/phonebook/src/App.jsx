@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import PersonList from './components/PersonList'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
+import Notification from './components/Notification'
 import personService from './services/persons'
 
 const App = () => {
@@ -10,6 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -49,6 +50,10 @@ const App = () => {
           })
         setNewName('')
         setNewNumber('')
+        setMessage(`Updated ${person.name} in the phonebook.`)
+        setTimeout(() => {
+        setMessage(null)
+      }, 3000)
       }
       
     } else {
@@ -62,6 +67,10 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+          setMessage(`Added ${returnedPerson.name} to the phonebook.`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 3000)
         })
     }
   }
@@ -74,6 +83,10 @@ const App = () => {
         const id = person.id
         setPersons(persons.filter(person => person.id !== id))
       })
+      setMessage(`Removed ${person.name} from the phonebook.`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 3000)
     }
   }
 
@@ -83,6 +96,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={message} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h2>Add a New Entry</h2>
       <PersonForm addPerson={addPerson} newName={newName} newNumber={newNumber} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} />
