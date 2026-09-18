@@ -14,8 +14,8 @@ const App = () => {
   useEffect(() => {
     personService
       .getAll()
-      .then(response => {
-        setPersons(response.data)
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
 
@@ -45,11 +45,22 @@ const App = () => {
       }
       personService
         .create(personObject)
-        .then(response => {
-          setPersons(persons.concat(response.data))
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
         })
+    }
+  }
+  
+  const removePerson = (person, id) => {
+    if (window.confirm(`Do you want to delete ${person.name} from the phonebook?`)){
+      personService
+      .remove(id)
+      .then(person => {
+        const id = person.id
+        setPersons(persons.filter(person => person.id !== id))
+      })
     }
   }
 
@@ -63,7 +74,7 @@ const App = () => {
       <h2>Add a New Entry</h2>
       <PersonForm addPerson={addPerson} newName={newName} newNumber={newNumber} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} />
       <h2>Numbers</h2>
-      <PersonList peopleList={peopleList} />
+      <PersonList peopleList={peopleList} removePerson={removePerson}/>
     </div>
   )
 }
