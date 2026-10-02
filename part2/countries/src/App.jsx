@@ -1,10 +1,11 @@
 import { useState, useEffect} from 'react'
-import Country from './components/Country'
+import CountryList from './components/CountryList'
 import countryService from './services/country'
 
 const App = () => {
   const [countries, setCountries] = useState(null)
   const [filter, setFilter] = useState('')
+  const [filteredCountries, setFilteredCountries] = useState(null)
 
   useEffect(() => {
       countryService
@@ -17,20 +18,15 @@ const App = () => {
   if (!countries) {
     return null
   }
-  // TODO: Figure out how you want to handle the filter? Right now it doesn't reset fully if the user deletes all input. 
-  // I think I remember setting up a second list of the filtered countries and keeping the full getAll() always in-state. 
+
   const handleFilterChange = (event) => {
-    event.preventDefault()
 
     setFilter(event.target.value)
 
-    if (filter.length > 0) {
-      setCountries(countries.filter(country => country.name.common.toLowerCase().includes(filter.toLowerCase())))
-    } if (filter.length === 0) {
-      countryService
-        .getAll()
-        .then(response => 
-          setCountries(response)) 
+    if (filter.length > 1) {
+      setFilteredCountries(countries.filter(country => country.name.common.toLowerCase().includes(filter.toLowerCase())))
+    } if (filter.length <= 1) {
+      setFilteredCountries(countries) 
     }
   }
   
@@ -41,12 +37,7 @@ const App = () => {
         search countries: <input value={filter} onChange={handleFilterChange}></input>
       </div>
       <div>
-        {countries.map(country => 
-          <Country
-            key={country.cca3}
-            country={country}
-          />
-        )}
+        <CountryList countries={filteredCountries} setFilteredCountries={setFilteredCountries} />
       </div>
     </>
   )
